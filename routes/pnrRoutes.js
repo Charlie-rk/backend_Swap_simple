@@ -10,10 +10,10 @@ import Request from "../models/requestModel.js";
 import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat, getAllNotifications, markNotificationAsSeen, deactivateNotification, rejectSwapRequest, deleteNotification } from "../controllers/notificationController.js";
 // Create an instance of PNRController
 //sangamkr.mishra
-const apiKey = "faa6bac541mshee4e9bf88a81448p12c76ajsnc853689715d2"; // You can fetch this from environment variables if needed
+// const apiKey = "faa6bac541mshee4e9bf88a81448p12c76ajsnc853689715d2"; // You can fetch this from environment variables if needed
 
 //ssangamkr.mishra
-//const apiKey = "e2ad1e5765msh05ca3bdf74a69b3p1d036bjsn68c272a895fc"; // You can fetch this from environment variables if needed
+const apiKey = "e2ad1e5765msh05ca3bdf74a69b3p1d036bjsn68c272a895fc"; // You can fetch this from environment variables if needed
 const pnrController = new PNRController(apiKey);
 
 //router.get("/getAllNotifications/:userId", getAllNotifications);
