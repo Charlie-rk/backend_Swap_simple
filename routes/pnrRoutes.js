@@ -26,64 +26,86 @@ router.post("/confirmSwap", confirmSwapSeat);
 router.post("/rejectSwapRequest", rejectSwapRequest);
 router.delete("/deleteNotification", deleteNotification);
 
+
 router.get("/:pnrNumber", async (req, res) => {
-  console.log("GET DETAILS OF PNR ::")
+  console.log("GET DETAILS OF PNR ::");
   const { pnrNumber } = req.params;
-  
-  const  userId  = req.query.userId; // Extract user from URL parameters
 
+  const userId = req.query.userId;  // Extract user from URL parameters
 
-  const user=await User.findById(userId);
-
+  const user = await User.findById(userId);
 
   try {
-    // console.log("hii");
+    // Fetch PNR Status from API
     const pnrStatus = await pnrController.getPNRStatus(pnrNumber);
+    // console.log("Response Data");
     // console.log(pnrStatus);
-    // console.log("byee");
-    const passengers = pnrStatus.data.passengerInfo.map((passenger) => ({
-      currentCoach: passenger.currentCoach,
-      currentBerthNo: passenger.currentBerthNo,
-    }));
-    // console.log(passengers);
-        
+
+    // Map passengerList with detailed information
+    const passengers = pnrStatus.data.passengerList.map((passenger) => {
+      let currentCoach;
+      let currentBerthNo;
+    
+      // Check if booking status is CNF
+      if (passenger.bookingStatus === "CNF") {
+        currentCoach = passenger.bookingCoachId;
+        currentBerthNo = passenger.bookingBerthNo;
+      } 
+      // If booking status is not CNF, check current status
+      else if (passenger.currentStatus === "CNF") {
+        currentCoach = passenger.currentCoachId;
+        currentBerthNo = passenger.currentBerthNo;
+      } 
+      // If neither booking nor current status is CNF, use default values
+      else {
+        currentCoach = passenger.currentStatus;
+        currentBerthNo = passenger.currentBerthNo;  // Assuming currentBerthNo remains the same
+      }
+    
+      return {
+        // Assigning the calculated currentCoach and currentBerthNo
+        currentCoach: currentCoach,
+        currentBerthNo: currentBerthNo,
+      };
+    });
+    
+     // Convert date from "Nov 27, 2024" to "04-10-2024" format
+     const journeyDate = new Date(pnrStatus.data.dateOfJourney);
+     const formattedDate = journeyDate.toLocaleDateString("en-GB").replace(/\//g, "-");
+
+    // Create travel model as per new data
     const travel = new Travel({
       pnrNo: pnrNumber,
       user: user,
       boardingInfo: {
-        trainId: pnrStatus.data.boardingInfo.trainId,
-        stationId: pnrStatus.data.boardingInfo.stationId,
-        stationName: pnrStatus.data.boardingInfo.stationName,
+        trainId: pnrStatus.data.trainNumber,  // Updated field
+        stationName: pnrStatus.data.boardingPoint,  // Updated field
       },
       destinationInfo: {
-        trainId: pnrStatus.data.boardingInfo.trainId,
-        stationId: pnrStatus.data.destinationInfo.stationId,
-        stationName: pnrStatus.data.destinationInfo.stationName,
+        stationName: pnrStatus.data.destinationStation,  // Updated field
       },
       seatInfo: {
-        coach: pnrStatus.data.seatInfo.coach,
-        berth: pnrStatus.data.seatInfo.berth,
-        noOfSeats: pnrStatus.data.seatInfo.noOfSeats,
+        noOfSeats: pnrStatus.data.numberOfpassenger,  // Updated field
       },
       trainInfo: {
-        trainNo: pnrStatus.data.trainInfo.trainNo,
-        name: pnrStatus.data.trainInfo.name,
-        boarding: pnrStatus.data.boardingInfo.stationName,
-        destination: pnrStatus.data.destinationInfo.stationName,
-        dt: pnrStatus.data.trainInfo.dt,
+        trainNo: pnrStatus.data.trainNumber,  // Updated field
+        name: pnrStatus.data.trainName,  // Updated field
+        boarding: pnrStatus.data.boardingPoint,  // Updated field
+        destination: pnrStatus.data.destinationStation,  // Updated field
+        dt: formattedDate,  // Updated field
       },
-      passengerInfo: passengers,
+      passengerInfo: passengers,  // Updated passenger info mapping
     });
 
     let data = await travel.save();
-    console.log("hi i am data", data);
-      
-    res.status(201).json({ success: true, message: "Succesful", travel });
+    // console.log("hi i am data", data);
+
+    res.status(201).json({ success: true, message: "Successful", travel });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 
 router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
