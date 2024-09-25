@@ -58,18 +58,18 @@ export const addRequest=async(req,res,next)=>{
         })
     }
    
-    // console.log("ADDING REQUEST ---------------");
-     //   console.log(travel);
-    // const check=await Request.findOne({pnrNo:travel.pnrNo});
-    // // uniqueness of pnr 
-    // if(check){
-    //     console.log("duplicates");
-    //     return res.status(202).json({
-    //         status:"202",
-    //         success:"false",
-    //         message:"You are Not permitted for multiple request for Single Pnr No",
-    //     })
-    // }
+    console.log("ADDING REQUEST ---------------");
+       console.log(travel);
+    const check=await Request.findOne({pnrNo:travel.pnrNo});
+    // uniqueness of pnr 
+    if(check){
+        console.log("duplicates");
+        return res.status(202).json({
+            status:"202",
+            success:"false",
+            message:"You are Not permitted for multiple request for Single Pnr No",
+        })
+    }
 
     const request=new Request({
         user:user,
