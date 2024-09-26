@@ -98,15 +98,15 @@ const travelSchema = new mongoose.Schema(
         seatInfo: {
             coach: {
                 type: String,
-                required: true
+                required: false
             },
             berth: {
                 type: String,
-                required: true
+                required: false
             },
             noOfSeats: {
                 type: Number,
-                required: true
+                required: false
             }
         },
         trainInfo: {
