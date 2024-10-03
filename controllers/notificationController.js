@@ -1130,8 +1130,8 @@ export const confirmSwapSeat = async (req, res) => {
     const resl2 = await Request.findOneAndDelete({ travelID: otherTravelId });
 
     // console.log("deleted Success");
-    const user1Message = `Your seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}) is confirmed with ${travel2.username}'s seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}).`;
-    const user2Message = `Your seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}) is confirmed with ${travel1.username}'s seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}).`;
+    const user1Message = `Your seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}) is confirmed with ${travel2.user.username}'s seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}).`;
+    const user2Message = `Your seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}) is confirmed with ${travel1.user.username}'s seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}).`;
 
     const subject1 = "SeatSwapConfirmed";
     const subject2 = "SeatSwapConfirmed";
