@@ -48,8 +48,10 @@ router.get("/:pnrNumber", async (req, res) => {
       destinationInfo: {
         stationName: "GAYA",  // Example destination station
       },
-      seatInfo: {
-        noOfSeats: 2,  // Example number of seats
+       seatInfo: {
+        coach:"B3",
+        berth:"15",
+        noOfSeats: 2, // Example number of seats
       },
       trainInfo: {
         trainNo: "12801",  // Same train number
@@ -72,7 +74,8 @@ router.get("/:pnrNumber", async (req, res) => {
   
     let data = await travel.save();
     console.log("Dummy1 travel data:", data);
-    res.status(201).json({ success: true, message: "Successful", travel });
+    return res.status(201).json({ success: true, message: "Successful", travel });
+    
   }
   
   // dummy2
@@ -88,7 +91,9 @@ router.get("/:pnrNumber", async (req, res) => {
         stationName: "GAYA",  // Different example destination station
       },
       seatInfo: {
-        noOfSeats: 1,  // Example number of seats
+        coach:"A1",
+        berth:"22",
+        noOfSeats: 2, // Example number of seats
       },
       trainInfo: {
         trainNo: "12801",  // Same train number
@@ -106,8 +111,9 @@ router.get("/:pnrNumber", async (req, res) => {
     });
   
     let data = await travel.save();
-    res.status(201).json({ success: true, message: "Successful", travel });
-    console.log("Dummy2 travel data:", data);
+      console.log("Dummy2 travel data:", data);
+  return  res.status(201).json({ success: true, message: "Successful", travel });
+  
   }
   
 
@@ -160,8 +166,10 @@ router.get("/:pnrNumber", async (req, res) => {
       destinationInfo: {
         stationName: pnrStatus.data.destinationStation,  // Updated field
       },
-      seatInfo: {
-        noOfSeats: pnrStatus.data.numberOfpassenger,  // Updated field
+       seatInfo: {
+        coach: passengers[0].currentCoach,
+        berth: passengers[0].currentBerthNo,
+        noOfSeats: pnrStatus.data.numberOfpassenger,
       },
       trainInfo: {
         trainNo: pnrStatus.data.trainNumber,  // Updated field
