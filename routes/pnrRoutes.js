@@ -37,6 +37,79 @@ router.get("/:pnrNumber", async (req, res) => {
   const userId = req.query.userId;  // Extract user from URL parameters
 
   const user = await User.findById(userId);
+   if (pnrNumber == 1275) {
+    const travel = new Travel({
+      pnrNo: "1275",  // Example PNR
+      user: user,  // Assuming the `user` object is fetched earlier
+      boardingInfo: {
+        trainId: 12801,  // Same train number
+        stationName: "KUR",  // Example boarding station
+      },
+      destinationInfo: {
+        stationName: "GAYA",  // Example destination station
+      },
+      seatInfo: {
+        noOfSeats: 2,  // Example number of seats
+      },
+      trainInfo: {
+        trainNo: "12801",  // Same train number
+        name: "PURUSHOTTAM SF",  // Example train name
+        boarding: "KUR",  // Example boarding station
+        destination: "GAYA",  // Example destination station
+        dt: "27-11-2024",  // Example formatted date
+      },
+      passengerInfo: [
+        {
+          currentCoach: "B3",  // Example coach
+          currentBerthNo: "15",  // Example berth number
+        },
+        {
+          currentCoach: "B3",  // Example coach for the second passenger
+          currentBerthNo: "16",  // Example berth number for the second passenger
+        },
+      ],
+    });
+  
+    let data = await travel.save();
+    console.log("Dummy1 travel data:", data);
+    res.status(201).json({ success: true, message: "Successful", travel });
+  }
+  
+  // dummy2
+  if (pnrNumber == 1276) {
+    const travel = new Travel({
+      pnrNo: "1276",  // Another example PNR
+      user: user,  // Assuming the `user` object is fetched earlier
+      boardingInfo: {
+        trainId: 12801,  // Same train number
+        stationName: "KUR", // Different example boarding station
+      },
+      destinationInfo: {
+        stationName: "GAYA",  // Different example destination station
+      },
+      seatInfo: {
+        noOfSeats: 1,  // Example number of seats
+      },
+      trainInfo: {
+        trainNo: "12801",  // Same train number
+        name: "PURUSHOTTAM SF",  // Example train name
+        boarding: "KUR",  // Example boarding station
+        destination: "GAYA",  // Example destination station
+        dt: "27-11-2024",  // Example formatted date
+      },
+      passengerInfo: [
+        {
+          currentCoach: "A1",  // Example coach for the passenger
+          currentBerthNo: "22",  // Example berth number
+        },
+      ],
+    });
+  
+    let data = await travel.save();
+    res.status(201).json({ success: true, message: "Successful", travel });
+    console.log("Dummy2 travel data:", data);
+  }
+  
 
   try {
     // Fetch PNR Status from API
