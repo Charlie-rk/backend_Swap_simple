@@ -5,6 +5,84 @@ import crypto from 'crypto';
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
+// mailer.js (or at top of your controller file)
+// import nodemailer from "nodemailer";
+
+const smtpOptions = {
+  host: "smtp.gmail.com",
+  port: 465,            // 465 (secure) or 587 (starttls)
+  secure: true,         // true for 465, false for 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // use app password if account has 2FA
+  },
+  // Timeouts (ms) - important in production to avoid hanging forever
+  connectionTimeout: 10000, // 10s to establish TCP connection
+  greetingTimeout: 10000,   // 10s to receive SMTP greeting
+  socketTimeout: 20000,     // 20s overall socket timeout
+  tls: {
+    // in some environments you may need this; try without it first
+    rejectUnauthorized: false
+  }
+};
+
+export const transporter = nodemailer.createTransport(smtpOptions);
+
+// helpful: verify immediately at server start (logs and fails fast)
+export async function verifyTransporter() {
+  try {
+    await transporter.verify();
+    console.log("Mailer transporter verified ✔");
+  } catch (err) {
+    console.error("Mailer transporter verify failed:", err);
+    // optionally rethrow or handle according to your app lifecycle needs
+  }
+}
+
+// small helper to add a send timeout guard
+function sendMailWithTimeout(mailOptions, timeoutMs = 20000) {
+  const sendPromise = transporter.sendMail(mailOptions);
+  const timeout = new Promise((_, rej) =>
+    setTimeout(() => rej(new Error("sendMail timed out")), timeoutMs)
+  );
+  return Promise.race([sendPromise, timeout]);
+}
+
+// import crypto from 'crypto';
+// import { transporter, verifyTransporter, sendMailWithTimeout } from './mailer.js';
+
+// run this once at app startup:
+verifyTransporter();
+
+export const sendOtp = async (req, res, next) => {
+  const { email } = req.body;
+  console.log("just inside sendOtp function");
+  if (!email) return res.status(400).json({ message: 'Email is required' });
+
+  const otp = crypto.randomInt(100000, 999999);
+  console.log("otp is ", otp);
+  otpStore[email] = otp;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'OTP for Signup',
+    text: `Your OTP is ${otp}`,
+    html: `<div>Your OTP is <strong>${otp}</strong></div>`
+  };
+
+  try {
+    console.log("sending mail", { to: email, subject: mailOptions.subject });
+    const info = await sendMailWithTimeout(mailOptions, 20000); // 20s timeout
+    console.log("mail sent, response:", info?.response || info);
+    return res.status(200).json({ message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error("Error sending OTP:", error && error.message ? error.message : error);
+    // avoid sending full error to client in production; but helpful for debugging:
+    return res.status(500).json({ message: 'Error sending OTP', error: error?.message || error });
+  }
+};
+
 
 dotenv.config();
 import { errorHandler } from "./../utilis/error.js";
@@ -21,87 +99,90 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendOtp=async(req,res,next)=>{
-  const { email } = req.body;
-  console.log("just inside sendOtp function");
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
+// -----------------
+// export const sendOtp=async(req,res,next)=>{
+//   const { email } = req.body;
+//   console.log("just inside sendOtp function");
+//   if (!email) {
+//     return res.status(400).json({ message: 'Email is required' });
+//   }
 
-  const otp = crypto.randomInt(100000, 999999); // Generate a 6-digit OTP
-  console.log("otp is ", otp);
-  otpStore[email] = otp;
+//   const otp = crypto.randomInt(100000, 999999); // Generate a 6-digit OTP
+//   console.log("otp is ", otp);
+//   otpStore[email] = otp;
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: ' OTP for Signup',
-    text: "Swap-simple",
-    html:`<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP Email</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4; /* Light background for the email body */
-            padding: 20px;
-        }
-        .otp-box {
-            background-color: black; /* Box background */
-            color: darkgreen; /* Text color */
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            margin: 0 auto;
-            max-width: 400px; /* Max width for the box */
-        }
-        .otp-input {
-            font-size: 24px;
-            padding: 10px;
-            border: 2px solid darkgreen; /* Input border color */
-            border-radius: 5px;
-            margin: 10px 0;
-            width: 80%; /* Adjust width as needed */
-        }
-        .thank-you {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .thank-you p {
-            margin: 5px 0;
-        }
-    </style>
-</head>
-<body>
+//   const mailOptions = {
+//     from: process.env.EMAIL_USER,
+//     to: email,
+//     subject: ' OTP for Signup',
+//     text: "Swap-simple",
+//     html:`<!DOCTYPE html>
+// <html lang="en">
+// <head>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <title>OTP Email</title>
+//     <style>
+//         body {
+//             font-family: Arial, sans-serif;
+//             background-color: #f4f4f4; /* Light background for the email body */
+//             padding: 20px;
+//         }
+//         .otp-box {
+//             background-color: black; /* Box background */
+//             color: darkgreen; /* Text color */
+//             padding: 20px;
+//             border-radius: 8px;
+//             text-align: center;
+//             margin: 0 auto;
+//             max-width: 400px; /* Max width for the box */
+//         }
+//         .otp-input {
+//             font-size: 24px;
+//             padding: 10px;
+//             border: 2px solid darkgreen; /* Input border color */
+//             border-radius: 5px;
+//             margin: 10px 0;
+//             width: 80%; /* Adjust width as needed */
+//         }
+//         .thank-you {
+//             margin-top: 20px;
+//             text-align: center;
+//         }
+//         .thank-you p {
+//             margin: 5px 0;
+//         }
+//     </style>
+// </head>
+// <body>
 
-    <div class="otp-box">
-        <h2>Your OTP is <strong>${otp}</strong></h2>
-        <p>Please use this to Sign up.</p>
-    </div>
+//     <div class="otp-box">
+//         <h2>Your OTP is <strong>${otp}</strong></h2>
+//         <p>Please use this to Sign up.</p>
+//     </div>
 
-    <div class="thank-you">
-        <p>❤️ Thank you for using our service! ❤️</p>
-        <p>Rustam & Sangam</p>
-    </div>
+//     <div class="thank-you">
+//         <p>❤️ Thank you for using our service! ❤️</p>
+//         <p>Rustam & Sangam</p>
+//     </div>
 
-</body>
-</html>
-`
-  };
-  try {
-    console.log("sending mail");
-    console.log(mailOptions);
-    await transporter.sendMail(mailOptions);
-    console.log("mail sent");
-    res.status(200).json({ message: 'OTP sent successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error sending OTP', error });
-  }
+// </body>
+// </html>
+// `
+//   };
+//   try {
+//     console.log("sending mail");
+//     console.log(mailOptions);
+//     await transporter.sendMail(mailOptions);
+//     console.log("mail sent");
+//     res.status(200).json({ message: 'OTP sent successfully' });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error sending OTP', error });
+//   }
 
-}
+// }
+
+// ------------------------------
 export const sendOtp1=async(req,res,next)=>{
   const { email } = req.body;
   console.log("just inside sendOtp1 function");
