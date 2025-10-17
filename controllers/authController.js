@@ -3,7 +3,9 @@ import User from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import crypto from 'crypto';
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
+dotenv.config();
 import { errorHandler } from "./../utilis/error.js";
 import jwt from "jsonwebtoken";
 
@@ -13,8 +15,8 @@ let otpStore1 = {};
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'rustampavri1275@gmail.com',
-    pass: 'ddmr evht khrl kabv', // Note: Move to environment variables
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // Note: Move to environment variables
   },
 });
 
@@ -30,7 +32,7 @@ export const sendOtp=async(req,res,next)=>{
   otpStore[email] = otp;
 
   const mailOptions = {
-    from: 'rustampavri1275@gmail.com',
+    from: process.env.EMAIL_USER,
     to: email,
     subject: ' OTP for Signup',
     text: "Swap-simple",
@@ -89,7 +91,10 @@ export const sendOtp=async(req,res,next)=>{
 `
   };
   try {
+    console.log("sending mail");
+    console.log(mailOptions);
     await transporter.sendMail(mailOptions);
+    console.log("mail sent");
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error sending OTP', error });
@@ -109,7 +114,7 @@ export const sendOtp1=async(req,res,next)=>{
   otpStore1[email] = otp;
 
   const mailOptions = {
-    from: 'rustampavri1275@gmail.com',
+    from: process.env.EMAIL_USER,
     to: email,
     subject: "Password Reset",
     text: "Swap-simple",
