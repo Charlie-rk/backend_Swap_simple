@@ -91,13 +91,13 @@ import jwt from "jsonwebtoken";
 let otpStore = {};
 let otpStore1 = {};
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: "sangamkr.mishra@gmail.com",
-    pass: "cprs mcnr hdcx bciv", // Note: Move to environment variables
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: "sangamkr.mishra@gmail.com",
+//     pass: "cprs mcnr hdcx bciv", // Note: Move to environment variables
+//   },
+// });
 
 // -----------------
 // export const sendOtp=async(req,res,next)=>{
