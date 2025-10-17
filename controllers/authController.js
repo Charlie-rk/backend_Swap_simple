@@ -15,8 +15,8 @@ let otpStore1 = {};
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Note: Move to environment variables
+    user: "sangamkr.mishra@gmail.com",
+    pass: "cprs mcnr hdcx bciv", // Note: Move to environment variables
   },
 });
 
