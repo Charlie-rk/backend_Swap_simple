@@ -20,11 +20,13 @@ const transporter = nodemailer.createTransport({
 
 export const sendOtp=async(req,res,next)=>{
   const { email } = req.body;
+  console.log("just inside sendOtp function");
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   }
 
   const otp = crypto.randomInt(100000, 999999); // Generate a 6-digit OTP
+  console.log("otp is ", otp);
   otpStore[email] = otp;
 
   const mailOptions = {
@@ -96,11 +98,14 @@ export const sendOtp=async(req,res,next)=>{
 }
 export const sendOtp1=async(req,res,next)=>{
   const { email } = req.body;
+  console.log("just inside sendOtp1 function");
+  console.log(email);
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   }
 
   const otp = crypto.randomInt(100000, 999999); // Generate a 6-digit OTP
+  console.log("otp is ", otp);
   otpStore1[email] = otp;
 
   const mailOptions = {
@@ -173,6 +178,9 @@ export const sendOtp1=async(req,res,next)=>{
 
 export const verifyOtp=async(req,res,next)=>{
   const { email, otp } = req.body;
+  console.log("just inside verifyOtp function");
+  console.log("email: ", email);
+  console.log("otp ", otp);
   if (otpStore[email] && otpStore[email] === parseInt(otp, 10)) {
     delete otpStore[email]; // Clear OTP after successful verification
     return res.status(200).json({ message: 'OTP verified' });
@@ -233,9 +241,9 @@ export const verifyOtp1 = async (req, res) => {
 
 
 export const signup = async (req, res, next) => {
-  // console.log("Rustam Signup");
+  console.log("Rustam Signup");
   const { username, email, password } = req.body;
-
+  console.log(req.body);
   if (
     !username ||
     !email ||
@@ -265,6 +273,8 @@ export const signup = async (req, res, next) => {
 
 export const signin = async (req, res, next) => {
   // console.log("Hey i am here for you ");
+  console.log("inside signin function");
+  console.log(req.body);
   const { email, password } = req.body;
   if (!email || !password || email === "" || password === "") {
     next(errorHandler(400, "All fields are required"));
