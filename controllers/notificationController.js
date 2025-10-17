@@ -148,7 +148,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: "rustampavri1275@gmail.com",
     //"djyh phga iwhf nkyr"
-    pass: "djyh phga iwhf nkyr",
+    pass: 'ddmr evht khrl kabv',
   },
 });
 
