@@ -6,9 +6,10 @@ import nodemailer from "nodemailer";
 import Swap from "../models/swapModel.js";
 import Travel from "../models/travelModel.js";
 import { sendExpoNotification } from "./expoNotification.js";
-
-import 'dotenv/config';
+import dotenv from "dotenv";
 import Request from "../models/requestModel.js";
+
+dotenv.config();
 
 export const getAllNotifications = async (req, res) => {
   // console.log("RKSAN");
@@ -146,9 +147,9 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "rustampavri1275@gmail.com",
+    user: process.env.EMAIL_USER,
     //"djyh phga iwhf nkyr"
-    pass: 'ddmr evht khrl kabv',
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -184,7 +185,7 @@ export const sendNotification = async ({ user1, user2, message1, message2, subje
     const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user1.email,
       subject: "Swap-simple notifications",
@@ -248,7 +249,7 @@ export const sendNotification = async ({ user1, user2, message1, message2, subje
     const emailOptions2 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user2.email,
       subject: "Swap-simple notifications",
@@ -351,7 +352,7 @@ export const sendNotification2 = async ({ user1, user2, message1, message2, subj
     const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user1.email,
       subject: "ConfirmYourSwap",
@@ -414,7 +415,7 @@ export const sendNotification2 = async ({ user1, user2, message1, message2, subj
     const emailOptions2 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user2.email,
       subject: "ConfirmYourSwap",
@@ -662,7 +663,7 @@ export const sendNotification_Rejection = async ({ user1, user2, message1, messa
     const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user1.email,
       subject: "Rejected",
@@ -728,7 +729,7 @@ export const sendNotification_Rejection = async ({ user1, user2, message1, messa
     const emailOptions2 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user2.email,
       subject: "ConfirmYourSwap",
@@ -929,7 +930,7 @@ export const sendNotification_Confirm = async ({ user1, user2, message1, message
     const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user1.email,
       subject: "ConfirmYourSwap",
@@ -995,7 +996,7 @@ export const sendNotification_Confirm = async ({ user1, user2, message1, message
     const emailOptions2 = {
       from: {
         name: "Rustam Kumar",
-        address: "rustampavri1275@gmail.com",
+        address: process.env.EMAIL_USER,
       },
       to: user2.email,
       subject: "ConfirmYourSwap",
